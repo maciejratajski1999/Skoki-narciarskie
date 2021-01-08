@@ -5,7 +5,7 @@ from jumper import Jumper
 from hill import Hill
 
 malysz = Jumper(55)
-wisla = Hill(100, 23)
+wisla = Hill(200, 32)
 
 def simulate_jump(hill, *jumpers):
 
@@ -23,7 +23,7 @@ def simulate_jump(hill, *jumpers):
     for jumper in jumpers:
         def model_x(vx, t):
             m = jumper.mass
-            drag_coefficient = 0.03 / m
+            drag_coefficient = 0.06 / m
             return -drag_coefficient * (vx ** 2)
 
         def model_y(vy, t):
@@ -62,4 +62,5 @@ for jump in jumps:
 plt.legend(["ląd","40kg","55kg","70kg"])
 plt.axis('equal')
 plt.gca().set_aspect('equal', adjustable='box')
+plt.title("Gx : Gy = 1:1")
 plt.show()
