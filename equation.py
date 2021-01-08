@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from jumper import Jumper
 from hill import Hill
 
-malysz = Jumper(55)
+malysz = Jumper(100)
 wisla = Hill(100, 25)
 
 
@@ -19,18 +19,12 @@ def move_jumper(jumper):
         if jumper.position[1] <= 0:
             break
 
-def simulate_jump(hill, jumper):
+def simulate_jump(hill, *jumpers):
 
-    def model_x(vx, t):
-        m = jumper.mass
-        drag_coefficient = 1 * 0.2 / m
-        return -drag_coefficient * (vx ** 2)
+    hill_length = np.linspace(0, 2 * hill.length, 1000)
+    hill_curve = [hill.curve(x) for x in hill_length]
 
-    def model_y(vy, t):
-        m = jumper.mass
-        drag_coefficient = 1 * 0.2 / m
-        g = 10
-        return -g + drag_coefficient * (vy**2)
+
 
     vy0 = 0
     vx0 = hill.velocity
@@ -38,25 +32,40 @@ def simulate_jump(hill, jumper):
     time = np.linspace(0,10, 10000)
     delta_time = 15/10000
 
-    VX = odeint(model_x, vx0, time)
-    VY = odeint(model_y, vy0, time)
-    jumper.move(0,hill.height)
-    X,Y = [jumper.position[0]], [jumper.position[1]]
+    jumps = []
 
-    for i in range(1, len(time)):
-        jumper.move(VX[i]*delta_time, VY[i]*delta_time)
-        X.append(jumper.position[0])
-        Y.append(jumper.position[1])
-        if Y[-1] <= 0 or X[-1] > hill.length*2:
-            break
+    for jumper in jumpers:
+        def model_x(vx, t):
+            m = jumper.mass
+            drag_coefficient = 1 * 0.2 / m
+            return -drag_coefficient * (vx ** 2)
 
-    return X, Y
+        def model_y(vy, t):
+            m = jumper.mass
+            drag_coefficient = 1 * 0.2 / m
+            g = 10
+            return -g + drag_coefficient * (vy ** 2)
+        VX = odeint(model_x, vx0, time)
+        VY = odeint(model_y, vy0, time)
+        jumper.move(0,hill.height)
+        X,Y = [jumper.position[0]], [jumper.position[1]]
 
-hill_length = np.linspace(0,2*wisla.length, 10000)
-hill_curve = [wisla.curve(x) for x in hill_length]
+        for i in range(1, len(time)):
+            jumper.move(VX[i]*delta_time, VY[i]*delta_time)
+            X.append(jumper.position[0])
+            Y.append(jumper.position[1])
+            j = [x>=jumper.position[0] for x in hill_length].index(True)
+            if Y[-1] <= hill_curve[j] or X[-1] > hill.length*2:
+                break
+        jumps.append([X,Y])
+    return jumps, hill_length, hill_curve
+
+jumps, hill_length, hill_curve = simulate_jump(wisla, malysz)
+
 plt.plot(hill_length, hill_curve)
 
-X,Y = simulate_jump(wisla, malysz)
-plt.plot(X,Y)
+for jump in jumps:
+    X,Y = jump[0], jump[1]
+    plt.plot(X,Y)
 
 plt.show()
