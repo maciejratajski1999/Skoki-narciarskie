@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from jumper import Jumper
 from hill import Hill
 
-malysz = Jumper(100)
+malysz = Jumper(55)
 wisla = Hill(100, 25)
 
 
@@ -37,12 +37,12 @@ def simulate_jump(hill, *jumpers):
     for jumper in jumpers:
         def model_x(vx, t):
             m = jumper.mass
-            drag_coefficient = 1 * 0.2 / m
+            drag_coefficient = 1 * 0.05 / m
             return -drag_coefficient * (vx ** 2)
 
         def model_y(vy, t):
             m = jumper.mass
-            drag_coefficient = 1 * 0.2 / m
+            drag_coefficient = 0.5 * 1 / m
             g = 10
             return -g + drag_coefficient * (vy ** 2)
         VX = odeint(model_x, vx0, time)
@@ -52,15 +52,16 @@ def simulate_jump(hill, *jumpers):
 
         for i in range(1, len(time)):
             jumper.move(VX[i]*delta_time, VY[i]*delta_time)
-            X.append(jumper.position[0])
-            Y.append(jumper.position[1])
-            j = [x>=jumper.position[0] for x in hill_length].index(True)
-            if Y[-1] <= hill_curve[j] or X[-1] > hill.length*2:
+            x,y = jumper.position[0],jumper.position[1]
+            X.append(x)
+            Y.append(y)
+
+            if y <= hill.curve(x) or x > hill.length*2:
                 break
         jumps.append([X,Y])
     return jumps, hill_length, hill_curve
 
-jumps, hill_length, hill_curve = simulate_jump(wisla, malysz)
+jumps, hill_length, hill_curve = simulate_jump(wisla, malysz, Jumper(10), Jumper(100))
 
 plt.plot(hill_length, hill_curve)
 
