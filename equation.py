@@ -5,7 +5,7 @@ from jumper import Jumper
 from hill import Hill
 
 malysz = Jumper(55)
-wisla = Hill(200, 32)
+wisla = Hill(100, 27)
 
 def simulate_jump(hill, *jumpers):
 
@@ -16,23 +16,21 @@ def simulate_jump(hill, *jumpers):
     vx0 = hill.velocity
 
     time = np.linspace(0,10, 10000)
-    delta_time = 15/10000
+    delta_time = 10/10000
 
     jumps = []
 
     for jumper in jumpers:
-        def model_x(vx, t):
-            m = jumper.mass
-            drag_coefficient = 0.06 / m
-            return -drag_coefficient * (vx ** 2)
+        def square_model(v, t):
+            cd = 0.002 / jumper.mass
+            l = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
+            return -cd * v[0] * l, cd * v[1] * l - 9.81
 
-        def model_y(vy, t):
-            m = jumper.mass
-            drag_coefficient = 0.6 / m
-            g = 9.81
-            return -g + drag_coefficient * (vy ** 2)
-        VX = odeint(model_x, vx0, time)
-        VY = odeint(model_y, vy0, time)
+        velocity = odeint(square_model, [vx0,vy0],time)
+        VX, VY = [], []
+        for single in velocity:
+            VX.append(single[0])
+            VY.append(single[1])
         jumper.move(0,hill.height + 3)
         X,Y = [jumper.position[0]], [jumper.position[1]]
 
@@ -62,5 +60,5 @@ for jump in jumps:
 plt.legend(["ląd","40kg","55kg","70kg"])
 plt.axis('equal')
 plt.gca().set_aspect('equal', adjustable='box')
-plt.title("Gx : Gy = 1:1")
+# plt.title("Gx : Gy = 1:1")
 plt.show()
