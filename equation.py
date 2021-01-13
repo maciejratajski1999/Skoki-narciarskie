@@ -50,7 +50,6 @@ def simulate_jump(hill, *jumpers):
 
 jumps, hill_length, hill_curve = simulate_jump(wisla, Jumper(40), malysz, Jumper(70))
 
-
 fig,ax = plt.subplots()
 plt.plot(hill_length, hill_curve)
 
