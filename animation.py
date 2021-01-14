@@ -60,9 +60,6 @@ class SkiJumpAnimation:
             color = 'r'
 
 
-wisła = Hill(100,25)
-okienko = SkiJumpAnimation(wisła)
-okienko.show((Jumper(55),Jumper(100)), 0.2, 9.81)
 
 
 
