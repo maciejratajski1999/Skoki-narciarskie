@@ -12,7 +12,6 @@ class SkiJumpAnimation:
         self.time = np.arange(0,10,self.delta_time)
         self.hill_curve, self.hill_length = self.__draw_hill()
         plt.plot(self.hill_length, self.hill_curve)
-        self.cnv.show()
 
 
 
@@ -20,25 +19,49 @@ class SkiJumpAnimation:
         hill_length = np.arange(0, 1.5 * self.hill.length, 0.1)
         return [self.hill.curve(x) for x in hill_length], hill_length
 
-    def __linear_model(self, v, mass, Cd, g):
+    def __linear_model(self, v, mass, Cd, g, area=2):
         '''
         :param v: tuple (Vx(i), Vy(i))
-        :param Cd: stała oporu powitrza
+        :param Cd: stała oporu powietrza
         :param mass: masa skoczka
         :param g: przyspieszenie ziemskie g
         :return : tuple (Vx(i+1),Vy(i+1))
         '''
-        return -(Cd/mass) * v[0] * self.delta_time, (-(Cd/mass) * v[1] - g) * self.delta_time
+        l = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
+        Cd = Cd/mass
+        area = self.__area(area,v)
+        print(area)
+        return -(Cd*1) * v[0]  * self.delta_time, (-(Cd*area) * v[1]  - g)  * self.delta_time
+
+    def __square_model(self, v, mass, Cd, g, area):
+        '''
+        :param v: tuple (Vx(i), Vy(i))
+        :param Cd: stała oporu powietrza
+        :param mass: masa skoczka
+        :param g: przyspieszenie ziemskie g
+        :return : tuple (Vx(i+1),Vy(i+1))
+        '''
+        l = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
+        Cd = Cd/mass
+        area = self.__area(area,v,l)
+        print(area)
+        return -(Cd*1) * v[0]  * l* self.delta_time, (-(Cd*area) * v[1] * l  - g)  * self.delta_time
+
+    def __area(self, area, v, l):
+        return area * ((abs(v[1])) / l)
+
 
     def show(self, jumpers, cd, g):
         color = 'b'
         for jumper in jumpers:
-            Cd = cd / jumper.mass
-            VX, VY = [self.hill.velocity], [0]
+            Cd = cd
+            VX, VY = [self.hill.velocity], [-0.05*self.hill.velocity]
             mass = jumper.mass
+            area = jumper.area
 
             for t in self.time[1:]:
-                x, y = self.__linear_model((VX[-1], VY[-1]), mass, Cd, g)
+                x, y = self.__square_model((VX[-1], VY[-1]), mass, Cd, g, area)
+                # print(t)
                 VX.append(VX[-1] + x)
                 VY.append(VY[-1] + y)
 
@@ -51,15 +74,21 @@ class SkiJumpAnimation:
                 Y.append(y)
                 if y <= self.hill.curve(x) or x > self.hill.length * 2:
                     break
+            plt.plot(X,Y)
+        plt.show()
+            # for i in range(0,len(X), 100):
+            #     c = plt.Circle((X[i],Y[i]), 0.6, color=color)
+            #     self.axs.add_artist(c)
+            #     self.cnv.canvas.draw()
+            #     plt.pause(self.delta_time*100)
+            # color = 'r'
 
-            for i in range(0,len(X), 100):
-                c = plt.Circle((X[i],Y[i]), 0.6, color=color)
-                self.axs.add_artist(c)
-                self.cnv.canvas.draw()
-                plt.pause(self.delta_time*100)
-            color = 'r'
 
 
 
+
+wisła = Hill(100,25)
+okienko = SkiJumpAnimation(wisła)
+okienko.show((Jumper(50),Jumper(70)), cd=0.1, g=9.81)
 
 

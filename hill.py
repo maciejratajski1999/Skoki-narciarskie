@@ -8,7 +8,7 @@ class Hill:
         self.velocity = velocity
         self.length = length
         self.height = self.length*(0.6)
-        self.draw_length = self.length*1.2
+        self.draw_length = self.length*1.25
         self.modifier = -(-(2/3)*((self.draw_length)**2))/self.height
 
     def curve(self, x):
