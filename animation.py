@@ -2,11 +2,11 @@ from jumper import Jumper
 from hill import Hill
 import numpy as np
 from matplotlib import pyplot as plt
+from math import sin, cos
 
 class SkiJumpAnimation:
 
     def __init__(self, hill):
-        self.cnv, self.axs = plt.subplots()
         self.hill = hill
         self.delta_time = 1/1000
         self.time = np.arange(0,10,self.delta_time)
@@ -43,21 +43,20 @@ class SkiJumpAnimation:
         '''
         l = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
         Cd = Cd/mass
-        area = self.__area(area,v,l)
-        print(area)
-        return -(Cd*1) * v[0]  * l* self.delta_time, (-(Cd*area) * v[1] * l  - g)  * self.delta_time
+        return -(Cd*area[0]) * v[0]  * l* self.delta_time, (-(Cd*area[1]) * v[1] * l  - g)  * self.delta_time
 
-    def __area(self, area, v, l):
-        return area * ((abs(v[1])) / l)
+    # def __area(self, area, v, l):
+    #     return area * ((abs(v[1])) / l)
 
 
-    def show(self, jumpers, cd, g):
+    def show(self, jumpers, cd, g, angle):
         color = 'b'
         for jumper in jumpers:
             Cd = cd
             VX, VY = [self.hill.velocity], [-0.05*self.hill.velocity]
             mass = jumper.mass
-            area = jumper.area
+            area = jumper.area*sin(angle), jumper.area*cos(angle)
+            print(area)
 
             for t in self.time[1:]:
                 x, y = self.__square_model((VX[-1], VY[-1]), mass, Cd, g, area)
@@ -72,7 +71,7 @@ class SkiJumpAnimation:
                 x, y = jumper.position[0], jumper.position[1]
                 X.append(x)
                 Y.append(y)
-                if y <= self.hill.curve(x) or x > self.hill.length * 2:
+                if y <= self.hill.curve(x) or x > self.hill_length[-1]:
                     break
             plt.plot(X,Y)
         plt.show()
@@ -87,8 +86,8 @@ class SkiJumpAnimation:
 
 
 
-wisła = Hill(100,25)
+wisła = Hill(100,23)
 okienko = SkiJumpAnimation(wisła)
-okienko.show((Jumper(50),Jumper(70)), cd=0.1, g=9.81)
+okienko.show((Jumper(45),Jumper(55),Jumper(65)), cd=0.038, g=9.81, angle=0)
 
 
