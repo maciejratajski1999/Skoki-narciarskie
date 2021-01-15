@@ -56,7 +56,6 @@ class SkiJumpAnimation:
             VX, VY = [self.hill.velocity], [-0.05*self.hill.velocity]
             mass = jumper.mass
             area = jumper.area*sin(angle), jumper.area*cos(angle)
-            print(area)
 
             for t in self.time[1:]:
                 x, y = self.__square_model((VX[-1], VY[-1]), mass, Cd, g, area)
