@@ -67,16 +67,11 @@ class CompareJumpers:
             plt.plot(X,Y)
             x, y = X[-1], Y[-1]
             plt.annotate(str(int(self.hill.distance(x))*2 / 2) + "m", (x, y))
-        masses = [None]+[str(jumper.mass) + "kg" for jumper in jumpers]
+        masses = ["skocznia"]+[str(jumper.mass) + "kg" for jumper in jumpers]
         plt.legend(masses)
         plt.show()
 
 # wisła = Hill(100,23, 0.1)
 # okienko = CompareJumpers(wisła)
 # okienko.show((Jumper(45),Jumper(55),Jumper(65)), cd=0.042, g=9.81, angle=pi/64)
-#
-#
-
-
-
 
