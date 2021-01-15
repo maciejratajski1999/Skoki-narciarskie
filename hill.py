@@ -1,3 +1,4 @@
+import numpy as np
 class Hill:
 
     def __init__(self, length, velocity, angle=0):
@@ -20,4 +21,11 @@ class Hill:
         x= x + self.length*0.2
         return ((1/(3*(self.draw_length)))*(x**3) - (x**2))/self.modifier + self.height
         # return (3/(10*(self.draw_length**2)))*(x**3) - (9/(10*self.draw_length))*(x**2) + self.height
+
+    def distance(self, a):
+        delta_x = 0.1
+        xs = np.arange(0,a,delta_x)
+        ys = [self.curve(x)*delta_x for x in xs]
+        surface = [((ys[i]-ys[i-1])**2 + delta_x**2)**(1/2) for i in range(1,len(ys))]
+        return sum(surface)
 

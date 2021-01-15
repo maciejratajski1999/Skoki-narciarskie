@@ -9,7 +9,7 @@ class CompareJumpers:
     def __init__(self, hill):
         self.hill = hill
         self.delta_time = 1/1000
-        self.time = np.arange(0,10,self.delta_time)
+        self.time = np.arange(0,15,self.delta_time)
         self.hill_curve, self.hill_length = self.__draw_hill()
         plt.plot(self.hill_length, self.hill_curve)
 
@@ -48,14 +48,14 @@ class CompareJumpers:
             VX, VY = [self.hill.velocity*cos(-self.hill.angle)], [self.hill.velocity*sin(-self.hill.angle)]
             mass = jumper.mass
             Cd = cd / mass
-            area = jumper.area*sin(angle), jumper.area*cos(angle)
+            area = jumper.area*sin(abs(angle)), jumper.area*cos(abs(angle))
 
             for t in self.time[1:]:
                 x, y = self.__square_model((VX[-1], VY[-1]), Cd, g, area)
                 VX.append(VX[-1] + x)
                 VY.append(VY[-1] + y)
 
-            jumper.move(0, self.hill.height+1)
+            jumper.move(0, self.hill.height)
             X, Y = [jumper.position[0]], [jumper.position[1]]
             for i in range(1, len(self.time)):
                 jumper.move(VX[i] * self.delta_time, VY[i] * self.delta_time)
@@ -66,7 +66,7 @@ class CompareJumpers:
                     break
             plt.plot(X,Y)
             x, y = X[-1], Y[-1]
-            plt.annotate(str(int(x * 2) / 2) + "m", (x, y))
+            plt.annotate(str(int(self.hill.distance(x))*2 / 2) + "m", (x, y))
         masses = [None]+[str(jumper.mass) + "kg" for jumper in jumpers]
         plt.legend(masses)
         plt.show()
@@ -74,8 +74,8 @@ class CompareJumpers:
 # wisła = Hill(100,23, 0.1)
 # okienko = CompareJumpers(wisła)
 # okienko.show((Jumper(45),Jumper(55),Jumper(65)), cd=0.042, g=9.81, angle=pi/64)
-
-
+#
+#
 
 
 
