@@ -71,9 +71,9 @@ class CompareJumpers:
         plt.legend(masses)
         plt.show()
 
-wisła = Hill(100,23, 0.1)
-okienko = CompareJumpers(wisła)
-okienko.show((Jumper(45),Jumper(55),Jumper(65)), cd=0.042, g=9.81, angle=pi/64)
+# wisła = Hill(100,23, 0.1)
+# okienko = CompareJumpers(wisła)
+# okienko.show((Jumper(45),Jumper(55),Jumper(65)), cd=0.042, g=9.81, angle=pi/64)
 
 
 
